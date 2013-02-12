@@ -8,6 +8,9 @@
 package edu.wpi.first.team811;
 
 
+import edu.wpi.first.team811.modes.Autonomous;
+import edu.wpi.first.team811.modes.Mode;
+import edu.wpi.first.team811.modes.Teleop;
 import edu.wpi.first.wpilibj.IterativeRobot;
 
 /**
@@ -18,26 +21,94 @@ import edu.wpi.first.wpilibj.IterativeRobot;
  * directory.
  */
 public class Team811Robot extends IterativeRobot {
+    
+    private Mode tele = new Teleop();
+    private Mode auto = new Autonomous();
+    
+    private boolean is_teleop = false;
+    private boolean is_autonomous = false;
+    
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
     public void robotInit() {
-
+        tele.robotStart();
+        auto.robotStart();
     }
 
+    /**
+     * This function is called on the start of autonomous
+     */
+    public void autonomousInit() {
+        is_autonomous = true;
+        auto.init();
+    }
+    
     /**
      * This function is called periodically during autonomous
      */
     public void autonomousPeriodic() {
-
+        waitForData();
+        auto.periodic();
     }
 
+    /**
+     * This function is called on the start of operator control
+     */
+    public void teleopInit() {
+        is_teleop = true;
+        tele.init();
+    }
+    
     /**
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
-        
+        waitForData();
+        tele.periodic();
+    }
+
+    /**
+     * This function is called on the start of disabled
+     */
+    public void disabledInit() {
+        if(is_autonomous) {
+            is_autonomous = false;
+            auto.disabled();
+        }
+        if(is_teleop) {
+            is_teleop = false;
+            tele.disabled();
+        }
+    }
+
+    /**
+     * This function is called periodically during disabled
+     */
+    public void disabledPeriodic() {
+        waitForData();
+    }
+
+    /**
+     * This function is called on the start of practice mode
+     */
+    public void testInit() {
     }
     
+    /**
+     * This function is called periodically during practice mode
+     */
+    public void testPeriodic() {
+        waitForData();
+    }
+    
+    /**
+     * Method to fix Iterative Robot bug - 
+     * robot does not wait for driver station packets
+     */
+    private void waitForData() {
+        getWatchdog().feed();
+        m_ds.waitForData();
+    }
 }
