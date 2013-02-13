@@ -11,7 +11,7 @@ package edu.wpi.first.team811.vars;
 public interface Config {
     //Pyramid Dumping Hook
     int PYRAMID_DUMP_HOOK_PORT = 1;
-    
+
     //Drive
     int LEFT_DRIVE_PORT = 1;
     int RIGHT_DRIVE_PORT = 2;
@@ -33,9 +33,19 @@ public interface Config {
     int XBOX_1_PORT = 1;
     int XBOX_2_PORT = 2;
     
+    //Climber
+    int BIG_CLIMBER_PORT = 5;
+    int SMALL_CLIMBER_PORT = 6;
+    int BIG_ANGLE_PORT = 4;
+    int SMALL_ANGLE_PORT = 3;
+    
     //Controls
     int DRIVE_MOVE_AXIS = 2;   //Axis - left stick y
     int DRIVE_ROTATE_AXIS = 4; //Axis - right stick x
     int DRIVE_SLOW_MODE = 5;   //Button - left bumper
+    int CLIMB_BIG_ANGLE_AXIS = 1;
+    int CLIMB_BIG_CLIMBER_AXIS = 2;
+    int CLIMB_SMALL_ANGLE_AXIS = 4;
+    int CLIMB_SMALL_CLIMBER_AXIS = 5;
     
 }

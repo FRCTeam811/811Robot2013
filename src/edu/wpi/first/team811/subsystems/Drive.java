@@ -13,12 +13,12 @@ public class Drive extends SubSystem {
     public void init() {
         d.drive.enable();
     }
-    
+
     public void run() {
         double move_val = d.xbox1.getRawAxis(DRIVE_MOVE_AXIS);
         double rotate_val = d.xbox1.getRawAxis(DRIVE_ROTATE_AXIS);
         boolean slow_mode = d.xbox1.getRawButton(DRIVE_SLOW_MODE);
-        
+
         if (!slow_mode) {//only add limit if left bumper is not pressed
             if (Math.abs(move_val) < DRIVE_INPUT_NOISE_THRESHOLD) {//removes noise
                 move_val = 0;
