@@ -22,13 +22,13 @@ public class Climber extends SubSystem {
         if (Math.abs(x1) < .26) {
             x1 = 0;
         }
-        if (Math.abs(y1) < .26) {
+        if (Math.abs(y1) < CLIMB_ERROR) {
             y1 = 0;
         }
-        if (Math.abs(x2) < .26) {
+        if (Math.abs(x2) < CLIMB_ERROR) {
             x2 = 0;
         }
-        if (Math.abs(y2) < .26) {
+        if (Math.abs(y2) < CLIMB_ERROR) {
             y2 = 0;
         }
 

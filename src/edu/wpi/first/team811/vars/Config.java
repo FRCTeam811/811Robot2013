@@ -38,6 +38,7 @@ public interface Config {
     int SMALL_CLIMBER_PORT = 6;
     int BIG_ANGLE_PORT = 4;
     int SMALL_ANGLE_PORT = 3;
+    double CLIMB_ERROR = .26;
     
     //Controls
     int DRIVE_MOVE_AXIS = 2;   //Axis - left stick y
