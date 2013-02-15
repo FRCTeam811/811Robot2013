@@ -7,6 +7,7 @@ package edu.wpi.first.team811.devices;
 import edu.wpi.first.team811.vars.Config;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
 
@@ -20,6 +21,9 @@ public final class EncoderDrivetrain implements Config{
     private SpeedController left_motor, right_motor;
     private PIDController left_pid, right_pid;
     private int max_speed = DRIVE_MAX_SPEED;
+    
+    private double[] l_i = new double[3];
+    private double[] r_i = new double[3];
 
     /**
      * Creates an encoder drive train from ports defaults to Talon Motor
@@ -53,8 +57,28 @@ public final class EncoderDrivetrain implements Config{
         left.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
         right.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
 
-        left_pid = new PIDController(DRIVE_PID_P, DRIVE_PID_I, DRIVE_PID_D, left, left_motor);
-        right_pid = new PIDController(DRIVE_PID_P, DRIVE_PID_I, DRIVE_PID_D, right, right_motor);
+        left_pid = new PIDController(DRIVE_PID_P, DRIVE_PID_I, DRIVE_PID_D,  new PIDSource() {
+
+            public double pidGet() {
+                l_i[2] = l_i[1];
+                l_i[1] = l_i[0];
+                l_i[0] = EncoderDrivetrain.this.left.getRate();
+                
+                return (l_i[2] + l_i[1] + l_i[0])/3;
+                //return left_count.getRate();
+            }
+        }, left_motor);
+        right_pid = new PIDController(DRIVE_PID_P, DRIVE_PID_I, DRIVE_PID_D,  new PIDSource() {
+
+            public double pidGet() {
+                r_i[2] = r_i[1];
+                r_i[1] = r_i[0];
+                r_i[0] = EncoderDrivetrain.this.right.getRate();
+                
+                return (r_i[2] + r_i[1] + r_i[0])/3;
+                //return right_count.getRate();
+            }
+        }, right_motor);
 
         setMaxSpeed(max_speed);
 
@@ -100,7 +124,7 @@ public final class EncoderDrivetrain implements Config{
             }
         }
 
-        setSpeed(leftMotorSpeed * -max_speed, rightMotorSpeed * max_speed);
+        setSpeed(leftMotorSpeed * max_speed, rightMotorSpeed * max_speed);
     }
     
     /**
@@ -206,8 +230,10 @@ public final class EncoderDrivetrain implements Config{
      * @param right_speed right side speed
      */
     public void setSpeed(double left_speed, double right_speed) {
-        left_pid.setSetpoint(left_speed);
-        right_pid.setSetpoint(right_speed);
+        //left_pid.setSetpoint(-left_speed);
+        setLeftSpeed(left_speed);
+        //right_pid.setSetpoint(right_speed);
+        setRightSpeed(right_speed);
     }
     
     /**
@@ -216,7 +242,7 @@ public final class EncoderDrivetrain implements Config{
      * @param left_speed left side speed
      */
     public void setLeftSpeed(double left_speed) {
-        left_pid.setSetpoint(left_speed);
+        left_pid.setSetpoint(-left_speed);
     }
     
     /**
@@ -227,4 +253,37 @@ public final class EncoderDrivetrain implements Config{
     public void setRightSpeed(double right_speed) {
         right_pid.setSetpoint(right_speed);
     }
+    
+    public boolean autoDrive(double left_distance, double right_distance) {
+        boolean left_done = false;
+        boolean right_done = false;
+        if (left.getDistance() < left_distance) {
+            //left_jag.set(.4);
+            //left_pid.setSetpoint(40);
+            setLeftSpeed(40);
+        } else {
+            //left_jag.set(0);
+            //left_pid.setSetpoint(0);
+            setLeftSpeed(0);
+            left_done = true;
+        }
+        if (right.getDistance() > right_distance * -1) {
+            //right_jag.set(-.4);
+            //right_pid.setSetpoint(-40);
+            setRightSpeed(40);
+        } else {
+            //right_jag.set(0);
+            //right_pid.setSetpoint(0);
+            setRightSpeed(0);
+            right_done = true;
+        }
+
+
+        //if (left_count.getDistance() > left_distance && right_count.getDistance() > right_distance*-1) {
+        if (left_done && right_done) {
+            return true;
+        }
+        return false;
+    }
+    
 }

@@ -16,7 +16,7 @@ public interface Config {
     int LEFT_DRIVE_PORT = 1;
     int RIGHT_DRIVE_PORT = 2;
     double DRIVE_INPUT_NOISE_THRESHOLD = 0.26;//if xbox joystick is below this, the input is ignored
-    int DRIVE_MAX_SPEED = 250;//max speed for the robot
+    int DRIVE_MAX_SPEED = 350;//max speed for the robot
     int DRIVE_SLOW_MAX_SPEED = 100;//max speed for slow mode
     double DRIVE_PID_P = 0.001;//PID Constant P for Encoder Drive
     double DRIVE_PID_I = 0.001;//PID Constant I for Encoder Drive
@@ -27,7 +27,7 @@ public interface Config {
     int LEFT_ENCODER_B_PORT = 2;
     int RIGHT_ENCODER_A_PORT = 3;
     int RIGHT_ENCODER_B_PORT = 4;
-    double DISTANCE_PER_PULSE = 1.5 / 9.9;
+    double DISTANCE_PER_PULSE = 0.125;
     
     //Joysticks
     int XBOX_1_PORT = 1;
