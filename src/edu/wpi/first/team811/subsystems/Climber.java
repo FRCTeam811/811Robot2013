@@ -14,12 +14,12 @@ public class Climber extends SubSystem {
     }
 
     public void run() {
-        double x1 = d.xbox1.getRawAxis(CLIMB_BIG_ANGLE_AXIS);
-        double y1 = d.xbox1.getRawAxis(CLIMB_BIG_CLIMBER_AXIS);
+        double x1 = d.xbox2.getRawAxis(CLIMB_BIG_ANGLE_AXIS);
+        double y1 = d.xbox2.getRawAxis(CLIMB_BIG_CLIMBER_AXIS);
 
-        double x2 = d.xbox1.getRawAxis(CLIMB_SMALL_ANGLE_AXIS);
-        double y2 = d.xbox1.getRawAxis(CLIMB_SMALL_CLIMBER_AXIS);
-        if (Math.abs(x1) < .26) {
+        double x2 = d.xbox2.getRawAxis(CLIMB_SMALL_ANGLE_AXIS);
+        double y2 = d.xbox2.getRawAxis(CLIMB_SMALL_CLIMBER_AXIS);
+        if (Math.abs(x1) < CLIMB_ERROR) {
             x1 = 0;
         }
         if (Math.abs(y1) < CLIMB_ERROR) {
