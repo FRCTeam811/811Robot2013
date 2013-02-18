@@ -11,12 +11,6 @@ import edu.wpi.first.team811.modes.Autonomous;
 import edu.wpi.first.team811.modes.Mode;
 import edu.wpi.first.team811.modes.Teleop;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.Hashtable;
 
 /**
  * Practice Bot Code

@@ -10,18 +10,18 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
  * @author saswat
  */
-public final class EncoderDrivetrain implements Config{
+public final class EncoderDrivetrain implements Config {
 
     private Encoder left, right;
     private SpeedController left_motor, right_motor;
     private PIDController left_pid, right_pid;
     private int max_speed = DRIVE_MAX_SPEED;
-    
     private double[] l_i = new double[3];
     private double[] r_i = new double[3];
 
@@ -57,25 +57,23 @@ public final class EncoderDrivetrain implements Config{
         left.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
         right.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
 
-        left_pid = new PIDController(DRIVE_PID_P, DRIVE_PID_I, DRIVE_PID_D,  new PIDSource() {
-
+        left_pid = new PIDController(DRIVE_PID_P, DRIVE_PID_I, DRIVE_PID_D, new PIDSource() {
             public double pidGet() {
                 l_i[2] = l_i[1];
                 l_i[1] = l_i[0];
                 l_i[0] = EncoderDrivetrain.this.left.getRate();
-                
-                return (l_i[2] + l_i[1] + l_i[0])/3;
+
+                return (l_i[2] + l_i[1] + l_i[0]) / 3;
                 //return left_count.getRate();
             }
         }, left_motor);
-        right_pid = new PIDController(DRIVE_PID_P, DRIVE_PID_I, DRIVE_PID_D,  new PIDSource() {
-
+        right_pid = new PIDController(DRIVE_PID_P, DRIVE_PID_I, DRIVE_PID_D, new PIDSource() {
             public double pidGet() {
                 r_i[2] = r_i[1];
                 r_i[1] = r_i[0];
                 r_i[0] = EncoderDrivetrain.this.right.getRate();
-                
-                return (r_i[2] + r_i[1] + r_i[0])/3;
+
+                return (r_i[2] + r_i[1] + r_i[0]) / 3;
                 //return right_count.getRate();
             }
         }, right_motor);
@@ -83,11 +81,33 @@ public final class EncoderDrivetrain implements Config{
         setMaxSpeed(max_speed);
 
         setSpeed(0, 0);
+        
+        left.start();
+        right.start();
     }
-    
+
+    /**
+     * update encoder speed
+     */
+    public void update() {
+        l_i[2] = l_i[1];
+        l_i[1] = l_i[0];
+        l_i[0] = left.getRate();
+
+        r_i[2] = r_i[1];
+        r_i[1] = r_i[0];
+        r_i[0] = right.getRate();
+        
+        SmartDashboard.putNumber("Left Encoder", left.getRate());
+        SmartDashboard.putNumber("Right Encoder", right.getRate());
+
+        SmartDashboard.putNumber("Left Distance", left.getDistance());
+        SmartDashboard.putNumber("Right Distance", right.getDistance());
+    }
+
     /**
      * Driving style comparable to a car
-     * 
+     *
      * @param moveValue accelerator
      * @param rotateValue steering wheel
      */
@@ -126,7 +146,7 @@ public final class EncoderDrivetrain implements Config{
 
         setSpeed(leftMotorSpeed * max_speed, rightMotorSpeed * max_speed);
     }
-    
+
     /**
      * Starts the drive train
      */
@@ -136,11 +156,11 @@ public final class EncoderDrivetrain implements Config{
 
         left.reset();
         right.reset();
-        
+
         left.start();
         right.start();
     }
-    
+
     /**
      * Stops the drive train
      */
@@ -150,16 +170,16 @@ public final class EncoderDrivetrain implements Config{
 
         left.reset();
         right.reset();
-        
+
         left.stop();
         right.stop();
-        
+
         setSpeed(0, 0);
     }
 
-    
     /**
      * Method to access the left encoder
+     *
      * @return the left side encoder
      */
     public Encoder getLeftEncoder() {
@@ -168,14 +188,16 @@ public final class EncoderDrivetrain implements Config{
 
     /**
      * Method to access the right encoder
+     *
      * @return the right side encoder
      */
     public Encoder getRightEncoder() {
         return right;
     }
-    
+
     /**
      * Method to access the left motor controller
+     *
      * @return the left side motor controller
      */
     public SpeedController getLeftMotor() {
@@ -184,12 +206,13 @@ public final class EncoderDrivetrain implements Config{
 
     /**
      * Method to access the right motor controller
+     *
      * @return the right side motor controller
      */
     public SpeedController getRightMotor() {
         return right_motor;
     }
-    
+
     /**
      * Convenience method, sets distance per pulse for both encoders
      *
@@ -209,9 +232,10 @@ public final class EncoderDrivetrain implements Config{
         left.setDistancePerPulse(left_distance);
         right.setDistancePerPulse(right_distance);
     }
-    
+
     /**
      * Set the maximum speed of the robot, used for the PID loop
+     *
      * @param speed the maximum speed
      */
     public void setMaxSpeed(int speed) {
@@ -225,7 +249,7 @@ public final class EncoderDrivetrain implements Config{
 
     /**
      * Tank drive
-     * 
+     *
      * @param left_speed left side speed
      * @param right_speed right side speed
      */
@@ -235,46 +259,49 @@ public final class EncoderDrivetrain implements Config{
         //right_pid.setSetpoint(right_speed);
         setRightSpeed(right_speed);
     }
-    
+
     /**
      * Sets speed on the left side
-     * 
+     *
      * @param left_speed left side speed
      */
     public void setLeftSpeed(double left_speed) {
         left_pid.setSetpoint(-left_speed);
     }
-    
+
     /**
      * Sets speed on the right side
-     * 
+     *
      * @param right_speed right side speed
      */
     public void setRightSpeed(double right_speed) {
         right_pid.setSetpoint(right_speed);
     }
-    
+
     public boolean autoDrive(double left_distance, double right_distance) {
         boolean left_done = false;
         boolean right_done = false;
         if (left.getDistance() < left_distance) {
             //left_jag.set(.4);
             //left_pid.setSetpoint(40);
-            setLeftSpeed(40);
+            setLeftSpeed(-30);
+            System.out.println(left.getDistance());
         } else {
             //left_jag.set(0);
             //left_pid.setSetpoint(0);
             setLeftSpeed(0);
             left_done = true;
+            System.out.println("done left");
         }
         if (right.getDistance() > right_distance * -1) {
             //right_jag.set(-.4);
             //right_pid.setSetpoint(-40);
-            setRightSpeed(40);
+            setRightSpeed(-30);
         } else {
             //right_jag.set(0);
             //right_pid.setSetpoint(0);
             setRightSpeed(0);
+            System.out.println("done right");
             right_done = true;
         }
 
@@ -285,5 +312,40 @@ public final class EncoderDrivetrain implements Config{
         }
         return false;
     }
-    
+
+    public boolean autoDrive2(double left_distance, double right_distance) {
+        boolean left_done = false;
+        boolean right_done = false;
+        double left_distance_current = left.getDistance();
+        double right_distance_current = right.getDistance();
+        if (left_distance_current < left_distance) {
+            if(right_distance_current - left_distance_current > 5) {
+                left_motor.set(.6);//left side is lagging, speed up
+            } else {
+                left_motor.set(.5);
+            }
+            
+        } else {
+            left_motor.set(0);
+            left_done = true;
+            System.out.println("done left");
+        }
+        
+        if (right_distance_current > right_distance * -1) {
+            if(left_distance_current - right_distance_current > 5) {
+                right_motor.set(.6);//right side is lagging, speed up
+            } else {
+                right_motor.set(.5);
+            }
+        } else {
+            right_motor.set(0);
+            right_done = true;
+            System.out.println("done right");
+        }
+
+        if (left_done && right_done) {
+            return true;
+        }
+        return false;
+    }
 }

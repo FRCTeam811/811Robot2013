@@ -17,12 +17,16 @@ public class Autonomous extends Mode {
     }
 
     public void init() {
+        //d.drive.enable();
     }
 
     public void periodic() {
+        d.drive.update();
+        //d.drive.autoDrive(360, 360);
     }
 
     public void disabled() {
+        //d.drive.disable();
     }
     
 }

@@ -6,6 +6,8 @@ package edu.wpi.first.team811.vars;
 
 import edu.wpi.first.team811.devices.EncoderDrivetrain;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Talon;
 
 /**
@@ -22,7 +24,12 @@ public class Devices implements Config {
     public final Talon smallangle;
     public final Talon bigclimber;
     public final Talon smallclimber;
-
+    public final Servo dumper;
+    public final RobotDrive manual_drive;
+    
+    //State vars...
+    public boolean dumper_increment_mode = false;
+    
     private Devices() {
         //Device Creation
         xbox1 = new Joystick(XBOX_1_PORT);
@@ -32,9 +39,13 @@ public class Devices implements Config {
         smallclimber = new Talon(SMALL_CLIMBER_PORT);
         bigangle = new Talon(BIG_ANGLE_PORT);
         smallangle = new Talon(SMALL_ANGLE_PORT);
-
+        dumper = new Servo(DUMPER_PORT);
+        manual_drive = new RobotDrive(drive.getLeftMotor(), drive.getRightMotor());
+        
         //Device Customization
         drive.setDistancePerPulse(DISTANCE_PER_PULSE);
+        manual_drive.setSafetyEnabled(false);
+        
     }
     
     //<editor-fold defaultstate="collapsed" desc="Singleton Code">
