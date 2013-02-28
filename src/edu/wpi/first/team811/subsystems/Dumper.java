@@ -12,69 +12,33 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Dumper extends SubSystem {
 
-    private double current = 0;
-
     public void init() {
+        d.dumper_xbox1_mode = false;//Reset dumper on robot start
     }
 
     public void run() {
-        /*if(d.xbox1.getRawButton(0)) {
-            
-         }
-         if (d.xbox2.getRawButton(DUMPER_DUMP_PORT)) {
-         d.dumper.set(DUMP_DUMPER_POSITION);
-         } else if (d.xbox2.getRawButton(DUMPER_FEED_PORT)) {
-         d.dumper.set(FEED_DUMPER_POSITION);
-         } else if (d.xbox2.getRawButton(DUMPER_ENABLE_MANUAL)) {
-         d.dumper.set(d.xbox2.getRawAxis(3));
-         } else {
-         d.dumper.set(NEUTRAL_DUMPER_POSITION);
-         }*/
-
-        if (d.xbox1.getRawButton(DUMPER_INCREMENT_ON)) {
-            d.dumper_increment_mode = true;
-        } else if (d.xbox1.getRawButton(DUMPER_INCREMENT_OFF)) {
-            d.dumper_increment_mode = false;
+        if (d.xbox1.getRawButton(DUMPER_JOY1_MODE_ON)) {
+            d.dumper_xbox1_mode = true;
+        } else if (d.xbox1.getRawButton(DUMPER_JOY1_MODE_OFF)) {
+            d.dumper_xbox1_mode = false;
         }
+        SmartDashboard.putNumber("Dumper Controller", (d.dumper_xbox1_mode ? 1 : 2));
 
-        if (d.dumper_increment_mode) {
-            double joy1 = d.xbox1.getRawAxis(DUMPER_INCREMENT_AXIS_1);
-            if (Math.abs(joy1) < DUMPER_JOYSTICK_ERROR) {
-                joy1 = 0;
-            }
-
-            double joy2 = d.xbox1.getRawAxis(DUMPER_INCREMENT_AXIS_2);
-            if (Math.abs(joy2) < DUMPER_JOYSTICK_ERROR) {
-                joy2 = 0;
-            }
-
-            current += (joy1 + joy2) * -DUMPER_JOYSTICK_SENSITIVITY;
-
-            if (current > 1) {
-                current = 1;
-            } else if (current < 0) {
-                current = 0;
-            }
-
-            d.dumper.set(current);
-
-
+        if (d.dumper_xbox1_mode) {
+            double joy1 = d.xbox1.getRawAxis(DUMPER_JOY1_SET_AXIS);
+            d.dumper.set(-joy1);
         } else {
-            if (d.xbox2.getRawButton(DUMPER_DUMP_PORT)) {
-                d.dumper.set(current = DUMP_DUMPER_POSITION);
-            } else if (d.xbox2.getRawButton(DUMPER_FEED_PORT)) {
-                d.dumper.set(current = FEED_DUMPER_POSITION);
-            } else if (d.xbox2.getRawButton(DUMPER_ENABLE_MANUAL)) {
-                d.dumper.set(current = d.xbox2.getRawAxis(DUMPER_MANUAL_SET));
+            if(d.xbox2.getRawButton(1)) {//Auto mode
+                if(d.dumper_limit.get()) {//Gets limitswitch state
+                    d.dumper.set(0);//Stop if hitting
+                } else {
+                    d.dumper.set(-.8);//Move if missing
+                }
             } else {
-                d.dumper.set(current = NEUTRAL_DUMPER_POSITION);
+                double joy2 = d.xbox2.getRawAxis(DUMPER_SET_AXIS);
+                d.dumper.set(-joy2);
             }
         }
-        SmartDashboard.putNumber("Servo: ", current);
-
-
-
-
     }
 
     public void disable() {

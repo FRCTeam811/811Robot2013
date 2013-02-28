@@ -14,18 +14,18 @@ public interface Config {
     int LEFT_DRIVE_PORT = 1;
     int RIGHT_DRIVE_PORT = 2;
     double DRIVE_INPUT_NOISE_THRESHOLD = 0.26;//if xbox joystick is below this, the input is ignored
-    int DRIVE_MAX_SPEED = 350;//max speed for the robot
+    int DRIVE_MAX_SPEED = 250;//max speed for the robot
     int DRIVE_SLOW_MAX_SPEED = 100;//max speed for slow mode
-    double DRIVE_PID_P = 0.001;//PID Constant P for Encoder Drive
-    double DRIVE_PID_I = 0.001;//PID Constant I for Encoder Drive
-    double DRIVE_PID_D = 0.001;//PID Constant D for Encoder Drive
+    double DRIVE_PID_P = 0.005;//PID Constant P for Encoder Drive
+    double DRIVE_PID_I = 0.005;//PID Constant I for Encoder Drive
+    double DRIVE_PID_D = 0.005;//PID Constant D for Encoder Drive
     
     //Encoder
     int LEFT_ENCODER_A_PORT = 1;
     int LEFT_ENCODER_B_PORT = 2;
     int RIGHT_ENCODER_A_PORT = 3;
     int RIGHT_ENCODER_B_PORT = 4;
-    double DISTANCE_PER_PULSE = 0.125;
+    double DISTANCE_PER_PULSE = 0.186;
     
     //Joysticks
     int XBOX_1_PORT = 1;
@@ -40,29 +40,20 @@ public interface Config {
     
     //Dumper
     int DUMPER_PORT = 10;
-    double DUMP_DUMPER_POSITION = 0;
-    double FEED_DUMPER_POSITION = 1;
-    double NEUTRAL_DUMPER_POSITION = 0.6;
-    double DUMPER_JOYSTICK_ERROR = .26;
-    double DUMPER_JOYSTICK_SENSITIVITY = .01;
+    int DUMPER_LIMIT_PORT = 5;
     
     //Controls
-    int DRIVE_MOVE_AXIS = 2;         //Axis - left stick y
-    int DRIVE_ROTATE_AXIS = 4;       //Axis - right stick x
-    int DRIVE_SLOW_MODE = 5;         //Button - left bumper
-    int CLIMB_BIG_ANGLE_AXIS = 1;    //Axis - 
-    int CLIMB_BIG_CLIMBER_AXIS = 2;  //
-    int CLIMB_SMALL_ANGLE_AXIS = 4;  //
-    int CLIMB_SMALL_CLIMBER_AXIS = 5;//
-    int DUMPER_SET_AXIS = 3;         //Axis - trigger
-    int DUMPER_ENABLE_MANUAL = 5;    //Dumper - Button - manual programming
-    int DUMPER_FEED_PORT = 4;        //Dumper - Button - feed port setting
-    int DUMPER_DUMP_PORT = 3;        //Dumper - Button dump port setting
-    int DUMPER_INCREMENT_ON = 1;     // Dumper - Button
-    int DUMPER_INCREMENT_OFF = 2;    // Dumper - Button
-    int DUMPER_INCREMENT_AXIS_1 = 2; // Dumper - Axis
-    int DUMPER_INCREMENT_AXIS_2 = 5;  // Dumper - Axis
-    int DUMPER_MANUAL_SET = 3;       //Dumper - Axis
-    
+    int DRIVE_MOVE_AXIS = 2;         //Joy1 - Axis(Left Stick Y) - Arcade/Encoder drive "accelerator"
+    int DRIVE_ROTATE_AXIS = 4;       //Joy1 - Axis(Right Stick X) - Arcade/Encoder drive "steering"
+    int DRIVE_SLOW_MODE = 5;         //Joy1 - Button(Left Bumper) - Encoder drive speed limiter
+    int CLIMB_BIG_ANGLE_AXIS = 1;    //Joy2 - Axis(Left Stick X) - Pivot big arm
+    int CLIMB_BIG_CLIMBER_AXIS = 2;  //Joy2 - Axis(Left Stick Y) - Control big arm hooks
+    int CLIMB_SMALL_ANGLE_AXIS = 4;  //Joy2 - Axis(Right Stick X) - Pivot small arm
+    int CLIMB_SMALL_CLIMBER_AXIS = 5;//Joy2 - Axis(Right Stick Y) - Control small arm hooks
+    int DUMPER_SET_AXIS = 3;         //Joy2 - Axis(Trigger) - Move dumper
+    int DUMPER_JOY1_SET_AXIS = 2;    //Joy2 - Axis(Left Stick Y) - Move dumper(with controller 1)
+    int DUMPER_JOY1_MODE_ON = 1;     //Joy1 - Button(A) - Dumper enable controller 1 override
+    int DUMPER_JOY1_MODE_OFF = 2;    //Joy1 - Button(B) - Dumper disable controller 1 override
+    int DUMPER_AUTOMOVE = 1;         //Joy2 - Button(A) - Auto moves the dumper until the limitswitch is hit
     
 }

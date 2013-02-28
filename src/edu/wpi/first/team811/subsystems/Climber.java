@@ -35,8 +35,8 @@ public class Climber extends SubSystem {
         d.bigclimber.set(y1);
         d.smallclimber.set(y2);
 
-        d.bigangle.set(x1);
-        d.smallangle.set(x2);
+        d.bigangle.set(-x1);
+        d.smallangle.set(-x2);
     }
 
     public void disable() {

@@ -48,7 +48,7 @@ public final class EncoderDrivetrain implements Config {
      * @param left_motor motor controller on left side
      * @param right_motor motor controller on right side
      */
-    public EncoderDrivetrain(Encoder left, Encoder right, SpeedController left_motor, SpeedController right_motor) {
+    public EncoderDrivetrain(final Encoder left, final Encoder right, final SpeedController left_motor, final SpeedController right_motor) {
         this.left = left;
         this.right = right;
         this.left_motor = left_motor;
@@ -59,24 +59,76 @@ public final class EncoderDrivetrain implements Config {
 
         left_pid = new PIDController(DRIVE_PID_P, DRIVE_PID_I, DRIVE_PID_D, new PIDSource() {
             public double pidGet() {
-                l_i[2] = l_i[1];
-                l_i[1] = l_i[0];
-                l_i[0] = EncoderDrivetrain.this.left.getRate();
-
-                return (l_i[2] + l_i[1] + l_i[0]) / 3;
-                //return left_count.getRate();
+                double r = left.getRate();
+                /*if(Math.abs(r) < 5) {
+                    r = 0;
+                    left_motor.set(0);
+                }*/
+                return r;
             }
-        }, left_motor);
+        }, left_motor){
+            boolean user_enabled = false;
+            
+            public synchronized void enable() {
+                user_enabled = true;
+                super.enable();
+            }
+
+            public synchronized void disable() {
+                user_enabled = false;
+                super.disable();
+            }
+            
+            public synchronized void setSetpoint(double setpoint) {
+                if(setpoint == 0) {
+                    if(isEnable()) {
+                        super.disable();
+                    }
+                    left_motor.set(0);
+                } else {
+                    if(!isEnable() && user_enabled) {
+                        super.enable();
+                    }
+                }
+                super.setSetpoint(setpoint);
+            }
+        };
         right_pid = new PIDController(DRIVE_PID_P, DRIVE_PID_I, DRIVE_PID_D, new PIDSource() {
             public double pidGet() {
-                r_i[2] = r_i[1];
-                r_i[1] = r_i[0];
-                r_i[0] = EncoderDrivetrain.this.right.getRate();
-
-                return (r_i[2] + r_i[1] + r_i[0]) / 3;
-                //return right_count.getRate();
+                double r = right.getRate();
+                /*if(Math.abs(r) < 5) {
+                    r = 0;
+                    right_motor.set(0);
+                }*/
+                return r;
             }
-        }, right_motor);
+        }, right_motor){
+            boolean user_enabled = false;
+            
+            public synchronized void enable() {
+                user_enabled = true;
+                super.enable();
+            }
+
+            public synchronized void disable() {
+                user_enabled = false;
+                super.disable();
+            }
+            
+            public synchronized void setSetpoint(double setpoint) {
+                if(setpoint == 0) {
+                    if(isEnable()) {
+                        super.disable();
+                    }
+                    right_motor.set(0);
+                } else {
+                    if(!isEnable() && user_enabled) {
+                        super.enable();
+                    }
+                }
+                super.setSetpoint(setpoint);
+            }
+        };
 
         setMaxSpeed(max_speed);
 
@@ -86,17 +138,22 @@ public final class EncoderDrivetrain implements Config {
         right.start();
     }
 
+    public void resetEncoders() {
+        left.reset();
+        right.reset();
+    }
+    
     /**
      * update encoder speed
      */
     public void update() {
-        l_i[2] = l_i[1];
+        /*l_i[2] = l_i[1];
         l_i[1] = l_i[0];
         l_i[0] = left.getRate();
 
         r_i[2] = r_i[1];
         r_i[1] = r_i[0];
-        r_i[0] = right.getRate();
+        r_i[0] = right.getRate();*/
         
         SmartDashboard.putNumber("Left Encoder", left.getRate());
         SmartDashboard.putNumber("Right Encoder", right.getRate());
@@ -258,6 +315,8 @@ public final class EncoderDrivetrain implements Config {
         setLeftSpeed(left_speed);
         //right_pid.setSetpoint(right_speed);
         setRightSpeed(right_speed);
+        
+        System.out.println(left_speed + ", " + left.getRate());
     }
 
     /**
@@ -284,7 +343,7 @@ public final class EncoderDrivetrain implements Config {
         if (left.getDistance() < left_distance) {
             //left_jag.set(.4);
             //left_pid.setSetpoint(40);
-            setLeftSpeed(-30);
+            setLeftSpeed(-15);
             System.out.println(left.getDistance());
         } else {
             //left_jag.set(0);
@@ -296,7 +355,7 @@ public final class EncoderDrivetrain implements Config {
         if (right.getDistance() > right_distance * -1) {
             //right_jag.set(-.4);
             //right_pid.setSetpoint(-40);
-            setRightSpeed(-30);
+            setRightSpeed(-15);
         } else {
             //right_jag.set(0);
             //right_pid.setSetpoint(0);
@@ -304,8 +363,7 @@ public final class EncoderDrivetrain implements Config {
             System.out.println("done right");
             right_done = true;
         }
-
-
+        
         //if (left_count.getDistance() > left_distance && right_count.getDistance() > right_distance*-1) {
         if (left_done && right_done) {
             return true;
@@ -313,6 +371,31 @@ public final class EncoderDrivetrain implements Config {
         return false;
     }
 
+    public boolean autoBackDrive(double left_distance, double right_distance) {
+        boolean left_done = false;
+        boolean right_done = false;
+        if (left.getDistance()*-1 < left_distance) {
+            setLeftSpeed(15);
+            System.out.println(left.getDistance());
+        } else {
+            setLeftSpeed(0);
+            left_done = true;
+            System.out.println("done left");
+        }
+        if (right.getDistance()*-1 > right_distance * -1) {
+            setRightSpeed(15);
+        } else {
+            setRightSpeed(0);
+            System.out.println("done right");
+            right_done = true;
+        }
+        
+        if (left_done && right_done) {
+            return true;
+        }
+        return false;
+    }
+    
     public boolean autoDrive2(double left_distance, double right_distance) {
         boolean left_done = false;
         boolean right_done = false;
